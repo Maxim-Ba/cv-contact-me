@@ -1,0 +1,31 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.telegram.telegrambots.starter.TelegramBotStarterConfiguration
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+  mail:
+    host: localhost
+    port: 25
+    username: test
+    password: test
+
+app:
+  telegram:
+    bot-token: test-token
+    bot-username: test-bot
+    chat-id: "12345"
+  smtp:
+    to: test@example.com
+    from: from@example.com
+  cors:
+    allowed-origins: http://localhost:4200
