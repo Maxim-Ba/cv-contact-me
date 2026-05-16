@@ -14,6 +14,7 @@ public class AppProperties {
     private Telegram telegram = new Telegram();
     private Smtp smtp = new Smtp();
     private Cors cors = new Cors();
+    private Geoip geoip = new Geoip();
 
     @Getter
     @Setter
@@ -34,5 +35,11 @@ public class AppProperties {
     @Setter
     public static class Cors {
         private String allowedOrigins = "http://localhost:4200";
+    }
+
+    @Getter
+    @Setter
+    public static class Geoip {
+        private String databasePath = "";
     }
 }

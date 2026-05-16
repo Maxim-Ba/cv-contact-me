@@ -47,3 +47,6 @@ buildNumber.properties
 
 # Environment
 .env
+
+# GeoIP database (binary, ~6 MB, requires MaxMind license)
+*.mmdb

@@ -30,6 +30,21 @@ public class Feedback {
     @Column(name = "sent_via", length = 50)
     private String sentVia;
 
+    @Column(name = "ip_address", length = 45)
+    private String ipAddress;
+
+    @Column(name = "user_agent", columnDefinition = "TEXT")
+    private String userAgent;
+
+    @Column(name = "referer", columnDefinition = "TEXT")
+    private String referer;
+
+    @Column(name = "accept_language", length = 255)
+    private String acceptLanguage;
+
+    @Column(name = "country", length = 100)
+    private String country;
+
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 

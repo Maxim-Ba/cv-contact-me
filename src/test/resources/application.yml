@@ -29,3 +29,5 @@ app:
     from: from@example.com
   cors:
     allowed-origins: http://localhost:4200
+  geoip:
+    database-path: ""

@@ -19,13 +19,16 @@ public class ContactService {
     private final TelegramNotifier telegramNotifier;
     private final EmailNotifier emailNotifier;
     private final FeedbackRepository feedbackRepository;
+    private final GeoIpService geoIpService;
 
     public ContactService(TelegramNotifier telegramNotifier,
                           EmailNotifier emailNotifier,
-                          FeedbackRepository feedbackRepository) {
+                          FeedbackRepository feedbackRepository,
+                          GeoIpService geoIpService) {
         this.telegramNotifier = telegramNotifier;
         this.emailNotifier = emailNotifier;
         this.feedbackRepository = feedbackRepository;
+        this.geoIpService = geoIpService;
     }
 
     /**
@@ -34,7 +37,8 @@ public class ContactService {
      *
      * @throws RuntimeException if all channels failed
      */
-    public void send(String name, String email, String message) {
+    public void send(String name, String email, String message,
+                     String ip, String userAgent, String referer, String acceptLanguage) {
         String sentVia;
 
         try {
@@ -51,10 +55,17 @@ public class ContactService {
             }
         }
 
+        String country = geoIpService.resolveCountry(ip);
+
         Feedback feedback = new Feedback(name, email, message);
         feedback.setSentVia(sentVia);
+        feedback.setIpAddress(ip);
+        feedback.setUserAgent(userAgent);
+        feedback.setReferer(referer);
+        feedback.setAcceptLanguage(acceptLanguage);
+        feedback.setCountry(country);
         feedbackRepository.save(feedback);
-        log.info("Feedback saved. sentVia={}, email={}", sentVia, email);
+        log.info("Feedback saved. sentVia={}, email={}, ip={}, country={}", sentVia, email, ip, country);
 
         if (VIA_FAILED.equals(sentVia)) {
             throw new RuntimeException("All notification channels failed");

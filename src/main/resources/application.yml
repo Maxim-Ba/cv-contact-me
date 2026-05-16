@@ -36,3 +36,5 @@ app:
     from: ${SMTP_USER:}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+  geoip:
+    database-path: ${GEOIP_DB_PATH:classpath:geoip/GeoLite2-Country.mmdb}

@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.stream.Collectors;
 
@@ -26,9 +27,16 @@ public class ContactController {
     }
 
     @PostMapping("/contact")
-    public ResponseEntity<ContactResponse> contact(@Valid @RequestBody ContactRequest request) {
+    public ResponseEntity<ContactResponse> contact(@Valid @RequestBody ContactRequest request,
+                                                   HttpServletRequest httpRequest) {
         try {
-            contactService.send(request.getName(), request.getEmail(), request.getMessage());
+            String ip = resolveClientIp(httpRequest);
+            String userAgent = httpRequest.getHeader("User-Agent");
+            String referer = httpRequest.getHeader("Referer");
+            String acceptLanguage = httpRequest.getHeader("Accept-Language");
+
+            contactService.send(request.getName(), request.getEmail(), request.getMessage(),
+                    ip, userAgent, referer, acceptLanguage);
             return ResponseEntity.ok(ContactResponse.success());
         } catch (RuntimeException ex) {
             log.error("Failed to deliver contact message", ex);
@@ -43,5 +51,17 @@ public class ContactController {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining("; "));
         return ResponseEntity.badRequest().body(ContactResponse.failure(errors));
+    }
+
+    private String resolveClientIp(HttpServletRequest request) {
+        String xRealIp = request.getHeader("X-Real-IP");
+        if (xRealIp != null && !xRealIp.isEmpty()) {
+            return xRealIp;
+        }
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 }
